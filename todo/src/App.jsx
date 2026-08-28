@@ -2,6 +2,7 @@ import './App.css'
 import { useState,useEffect } from 'react'
 import axios from 'axios'
 import Row from './components/row'
+import { useUser } from './context/useUser'
 
 const apiUrl = 'http://localhost:3001'
 
@@ -10,6 +11,7 @@ const apiUrl = 'http://localhost:3001'
 function App() {
   const [task, setTask] = useState('')
   const [tasks, setTasks] = useState([])
+  const { user } = useUser()
 
 useEffect(() => {
 axios.get(`${apiUrl}/tasks`)
@@ -25,9 +27,10 @@ alert(error.response.data ? error.response.data.message : error)
 const addTask = (event) => {
   event.preventDefault()
 
+  const headers = {headers: {Authorization: `Bearer ${user.token}`}}
   const newTask = { description: task }
 
-  axios.post(`${apiUrl}/tasks`, { task: newTask })
+  axios.post(`${apiUrl}/tasks`, { task: newTask }, headers)
     .then(response => {
       setTasks(currentTasks => [...currentTasks, response.data])
       setTask('')
@@ -38,7 +41,8 @@ const addTask = (event) => {
 }
 
 const deleteTask = (deleted) => {
-  axios.delete(`${apiUrl}/tasks/${deleted}`)
+  const headers = {headers: {Authorization: `Bearer ${user.token}`}}
+  axios.delete(`${apiUrl}/tasks/${deleted}`, headers)
   .then(response => {
     setTasks(currentTasks => currentTasks.filter(item => item.id !== deleted))
   })
