@@ -1,0 +1,37 @@
+import fs from 'fs/promises'
+import path from 'path'
+import { pool } from './db.js'
+import { hash } from 'bcrypt'
+import jwt from 'jsonwebtoken'
+
+const { sign } = jwt
+const __dirname = import.meta.dirname
+const initializeTestDb = async () => {
+    const sql = await fs.readFile(path.resolve(__dirname, '../db.sql'), 'utf8')
+    const client = await pool.connect()
+    try {
+        await client.query(sql)
+    } finally {
+        client.release()
+    }
+}
+export { initializeTestDb }
+
+const insertTestUser = async (user) => {
+    const hashedPassword = await hash(user.password, 10)
+
+    await pool.query(
+        'INSERT INTO account (email, password) VALUES ($1, $2)',
+        [user.email.toLowerCase(), hashedPassword],
+    )
+    console.log("USER INSERTED:", user.email)
+}
+
+export { insertTestUser }
+
+
+const getToken = (email) =>{
+return sign({ email }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' })
+}
+
+export { getToken }
