@@ -19,7 +19,7 @@ axios.get(`${apiUrl}/tasks`)
 setTasks(response.data)
 })
 .catch(error => {
-alert(error.response.data ? error.response.data.message : error)
+alert(error.response.data ? error.response.data.error.message : error)
 })
 }, [])
 
@@ -36,7 +36,7 @@ const addTask = (event) => {
       setTask('')
     })
     .catch(error => {
-      alert(error.response.data ? error.response.data.message : error)
+      alert(error.response.data ? error.response.data.error.message : error)
     })
 }
 
@@ -47,7 +47,7 @@ const deleteTask = (deleted) => {
     setTasks(currentTasks => currentTasks.filter(item => item.id !== deleted))
   })
   .catch(error => {
-    alert(error.response.data ? error.response.data.message : error)
+    alert(error.response.data ? error.response.data.error.message : error)
   })
 }
 
